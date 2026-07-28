@@ -6,9 +6,11 @@
 //
 
 public struct AgentConfig {
+    let provider: ModelProvider
     let modelUrl: String
     
-    public init(modelUrl: String) {
+    public init (provider: ModelProvider, modelUrl: String) {
+        self.provider = provider
         self.modelUrl = modelUrl
     }
 }

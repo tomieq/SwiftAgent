@@ -16,7 +16,8 @@ let package = Package(
         ),
     ],
     dependencies: [
-        .package(url: "https://github.com/tomieq/WebResponse", branch: "master")
+        .package(url: "https://github.com/tomieq/WebResponse", branch: "master"),
+        .package(url: "https://github.com/tomieq/SwiftExtensions", .upToNextMajor(from: "2.0.0"))
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -24,7 +25,8 @@ let package = Package(
         .target(
             name: "SwiftAgent",
             dependencies: [
-                .product(name: "WebResponse", package: "WebResponse")
+                .product(name: "WebResponse", package: "WebResponse"),
+                .product(name: "SwiftExtensions", package: "SwiftExtensions")
             ]
         ),
         .testTarget(
