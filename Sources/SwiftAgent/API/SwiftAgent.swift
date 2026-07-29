@@ -10,12 +10,12 @@ public final class SwiftAgent {
         self.tools = tools
     }
 
-    public var session: AISession {
+    public func session(systemMessage: String? = nil) -> AISession {
         switch config.provider {
         case .ollama:
-            SessionExecutor<OllamaRequestDto, OllamaResponseDto, OllamaMessageDto>(config: config, tools: tools)
+            SessionExecutor<OllamaRequestDto, OllamaResponseDto, OllamaMessageDto>(config: config, tools: tools, systemMessage: systemMessage)
         case .openAI:
-            SessionExecutor<OpenAIRequestDto, OpenAIResponseDto, OpenAIMessageDto>(config: config, tools: tools)
+            SessionExecutor<OpenAIRequestDto, OpenAIResponseDto, OpenAIMessageDto>(config: config, tools: tools, systemMessage: systemMessage)
         }
     }
 }

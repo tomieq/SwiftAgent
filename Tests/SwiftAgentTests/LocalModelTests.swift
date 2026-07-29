@@ -20,7 +20,7 @@ struct LocalOllamaTests {
     @Test func localOllamaSimpleCalculation() async throws {
         LoggerDispatcher.logLevel = .error
         let agent = SwiftAgent(config: config)
-        let session = agent.session
+        let session = agent.session(systemMessage: "You are Math teacher. Help user with his tasks.")
         let response = try await session.ask("How many is 4+8?. Return just a number", model: model)
         print(response)
         #expect(response == .text("12"))
@@ -44,7 +44,7 @@ struct LocalOllamaTests {
             )
         )
         let agent = SwiftAgent(config: config, tools: [jiraTool])
-        let session = agent.session
+        let session = agent.session()
         let response = try await session.ask("What the jira CLOUD-7863 is all about?", model: model)
         print(response)
         #expect(response == .functionCall(FunctionCall(name: "jira_get_issue", arguments: ["jiraID": .string("CLOUD-7863")])))

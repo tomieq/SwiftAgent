@@ -15,7 +15,9 @@ final class SessionExecutor<REQUEST: ModelRequest, RESPONSE: ModelResponse, MESS
     let headers: [String: String]
     var usedTokens: Int = 0
 
-    init(config: AgentConfig, tools: [Tool]?) {
+    init(config: AgentConfig,
+         tools: [Tool]?,
+         systemMessage: String? = nil) {
         self.config = config
         self.tools = tools
 
@@ -24,6 +26,13 @@ final class SessionExecutor<REQUEST: ModelRequest, RESPONSE: ModelResponse, MESS
             headers["Authorization"] = "Bearer \(token)"
         }
         self.headers = headers
+        if let systemMessage {
+            self.messages.append(
+                MESSAGE(role: .system,
+                        name: nil,
+                        content: systemMessage)
+            )
+        }
     }
 
     func ask(_ prompt: String, model: String) async throws -> SessionResponse {
