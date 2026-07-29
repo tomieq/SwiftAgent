@@ -13,6 +13,10 @@ let package = Package(
         .library(
             name: "SwiftAgent",
             targets: ["SwiftAgent"]
+        ),
+        .library(
+            name: "MCPAdapter",
+            targets: ["MCPAdapter"]
         )
     ],
     dependencies: [
@@ -31,9 +35,19 @@ let package = Package(
                 .product(name: "Logger", package: "Logger")
             ]
         ),
+        .target(
+            name: "MCPAdapter",
+            dependencies: [
+                .target(name: "SwiftAgent")
+            ]
+        ),
         .testTarget(
             name: "SwiftAgentTests",
             dependencies: ["SwiftAgent"]
+        ),
+        .testTarget(
+            name: "MCPAdapterTests",
+            dependencies: ["MCPAdapter"]
         )
     ]
 )
