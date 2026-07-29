@@ -41,16 +41,16 @@ extension OpenAIMessageDto: ModelMessage {
                   content: content,
                   toolCalls: nil)
     }
-}
 
-struct OpenAIToolCall: Codable {
-    let type = "function"
-    let function: OpenAIToolFunction
-    let id: String
-}
+    var functionCall: FunctionCall? {
+        guard let firstCall = toolCalls?.first?.function else {
+            return nil
+        }
 
-struct OpenAIToolFunction: Codable {
-    let name: String
-    // arguments contains a json String in format name: value
-    let arguments: String
+        guard let arguments: [String: JSONValue] = .init(json: firstCall.arguments) else {
+            print("Problem creating [String: JSONValue] from: \(firstCall.arguments)")
+            return nil
+        }
+        return FunctionCall(name: firstCall.name, arguments: arguments)
+    }
 }

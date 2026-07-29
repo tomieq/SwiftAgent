@@ -41,17 +41,12 @@ extension OllamaMessageDto: ModelMessage {
                   content: content,
                   toolCalls: nil)
     }
-}
 
-struct OllamaToolCall: Codable {
-    let type = "function"
-    let function: OllamaToolFunction
-    let id: String
-}
+    var functionCall: FunctionCall? {
+        guard let firstCall = toolCalls?.first?.function else {
+            return nil
+        }
 
-struct OllamaToolFunction: Codable {
-    let name: String
-    // Ollama returns structured JSON, whose values can be numbers, booleans,
-    // arrays, objects, or null as well as strings.
-    let arguments: [String: JSONValue]
+        return FunctionCall(name: firstCall.name, arguments: firstCall.arguments)
+    }
 }

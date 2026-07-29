@@ -5,7 +5,7 @@
 //  Created by: tomieq on 29/07/2026
 //
 
-enum JSONValue: Codable, Equatable, Sendable {
+public enum JSONValue: Codable, Equatable, Sendable {
     case null
     case bool(Bool)
     case integer(Int)
@@ -14,7 +14,7 @@ enum JSONValue: Codable, Equatable, Sendable {
     indirect case array([JSONValue])
     indirect case object([String: JSONValue])
 
-    init(from decoder: Decoder) throws {
+    public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
 
         if container.decodeNil() {
@@ -39,7 +39,7 @@ enum JSONValue: Codable, Equatable, Sendable {
         }
     }
 
-    func encode(to encoder: Encoder) throws {
+    public func encode(to encoder: Encoder) throws {
         var container = encoder.singleValueContainer()
 
         switch self {

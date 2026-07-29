@@ -1,17 +1,12 @@
 //
-//  ModelProxy.swift
+//  SessionExecutor.swift
 //  SwiftAgent
 //
 //  Created by: tomieq on 29/07/2026
 //
 import WebResponse
 
-protocol AIProxy {
-    func ask(_ prompt: String, model: String) async throws -> String
-    func toolResponse(_ toolResponse: String, toolName: String, model: String) async throws -> String
-}
-
-final class ModelProxy<REQUEST: ModelRequest, RESPONSE: ModelResponse, MESSAGE: ModelMessage>: AIProxy {
+final class SessionExecutor<REQUEST: ModelRequest, RESPONSE: ModelResponse, MESSAGE: ModelMessage>: AISession {
     private var messages: [ModelMessage] = []
     let config: AgentConfig
     let tools: [Tool]?
@@ -21,7 +16,7 @@ final class ModelProxy<REQUEST: ModelRequest, RESPONSE: ModelResponse, MESSAGE: 
         self.tools = tools
     }
 
-    func ask(_ prompt: String, model: String) async throws -> String {
+    func ask(_ prompt: String, model: String) async throws -> SessionResponse {
         messages.append(
             MESSAGE(
                 role: .user,
@@ -45,16 +40,19 @@ final class ModelProxy<REQUEST: ModelRequest, RESPONSE: ModelResponse, MESSAGE: 
             }
             throw httpError
         case .response(let body, _):
-            print(body.json ?? "nil")
+            print("response: \(body.json ?? "nil")")
             if let lastMessage = body.lastMessage {
                 messages.append(lastMessage)
-                return lastMessage.content ?? "No answer"
+                if let functionCall = lastMessage.functionCall {
+                    return .functionCall(functionCall)
+                }
+                return .text(lastMessage.content ?? "No answer")
             }
-            return "No answer"
+            return .text("No message")
         }
     }
 
-    func toolResponse(_ toolResponse: String, toolName: String, model: String) async throws -> String {
+    func toolResponse(_ toolResponse: String, toolName: String, model: String) async throws -> SessionResponse {
         messages.append(
             MESSAGE(
                 role: .tool,
@@ -79,12 +77,15 @@ final class ModelProxy<REQUEST: ModelRequest, RESPONSE: ModelResponse, MESSAGE: 
             }
             throw httpError
         case .response(let body, _):
-            print(body.json ?? "nil")
+            print("response: \(body.json ?? "nil")")
             if let lastMessage = body.lastMessage {
                 messages.append(lastMessage)
-                return lastMessage.content ?? "No answer"
+                if let functionCall = lastMessage.functionCall {
+                    return .functionCall(functionCall)
+                }
+                return .text(lastMessage.content ?? "No answer")
             }
-            return "No answer"
+            return .text("No message")
         }
     }
 }

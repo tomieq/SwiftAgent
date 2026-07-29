@@ -8,4 +8,5 @@
 protocol ModelMessage {
     init(role: RoleDto, name: String?, content: String)
     var content: String? { get }
+    var functionCall: FunctionCall? { get }
 }
