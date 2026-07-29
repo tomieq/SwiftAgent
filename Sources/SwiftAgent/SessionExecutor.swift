@@ -11,6 +11,7 @@ final class SessionExecutor<REQUEST: ModelRequest, RESPONSE: ModelResponse, MESS
     let config: AgentConfig
     let tools: [Tool]?
     let headers: [String: String]
+    var usedTokens: Int = 0
 
     init(config: AgentConfig, tools: [Tool]?) {
         self.config = config
@@ -47,6 +48,7 @@ final class SessionExecutor<REQUEST: ModelRequest, RESPONSE: ModelResponse, MESS
             }
             throw httpError
         case .response(let body, _):
+            usedTokens += body.usedTokens
             print("response: \(body.json ?? "nil")")
             if let lastMessage = body.lastMessage {
                 messages.append(lastMessage)
@@ -84,6 +86,7 @@ final class SessionExecutor<REQUEST: ModelRequest, RESPONSE: ModelResponse, MESS
             }
             throw httpError
         case .response(let body, _):
+            usedTokens += body.usedTokens
             print("response: \(body.json ?? "nil")")
             if let lastMessage = body.lastMessage {
                 messages.append(lastMessage)

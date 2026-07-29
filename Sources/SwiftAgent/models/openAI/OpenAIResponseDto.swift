@@ -8,11 +8,16 @@
 struct OpenAIResponseDto: Codable {
     let choices: [OpenAIChoiceDto]
     let model: String
+    let usage: OpenAIUsageDto
 }
 
 extension OpenAIResponseDto: ModelResponse {
     var lastMessage: ModelMessage? {
         self.choices.first?.message
+    }
+
+    var usedTokens: Int {
+        usage.totalTokens
     }
 }
 

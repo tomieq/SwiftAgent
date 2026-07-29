@@ -8,4 +8,5 @@
 public protocol AISession {
     func ask(_ prompt: String, model: String) async throws -> SessionResponse
     func toolResponse(_ toolResponse: String, toolName: String, model: String) async throws -> SessionResponse
+    var usedTokens: Int { get }
 }

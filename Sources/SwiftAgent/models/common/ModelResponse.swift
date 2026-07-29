@@ -7,4 +7,5 @@
 
 protocol ModelResponse: Codable {
     var lastMessage: ModelMessage? { get }
+    var usedTokens: Int { get }
 }

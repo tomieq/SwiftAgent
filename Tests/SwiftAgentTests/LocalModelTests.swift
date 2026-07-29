@@ -18,9 +18,11 @@ struct LocalOllamaTests {
 
     @Test func localOllamaSimpleCalculation() async throws {
         let agent = SwiftAgent(config: config)
-        let response = try await agent.session.ask("How many is 4+8?. Return just a number", model: model)
+        let session = agent.session
+        let response = try await session.ask("How many is 4+8?. Return just a number", model: model)
         print(response)
         #expect(response == .text("12"))
+        print("Used tokens: \(session.usedTokens)")
     }
 
     @Test func localOllamaToolCall() async throws {
@@ -40,8 +42,10 @@ struct LocalOllamaTests {
             )
         )
         let agent = SwiftAgent(config: config, tools: [jiraTool])
-        let response = try await agent.session.ask("What the jira CLOUD-7863 is all about?", model: model)
+        let session = agent.session
+        let response = try await session.ask("What the jira CLOUD-7863 is all about?", model: model)
         print(response)
         #expect(response == .functionCall(FunctionCall(name: "jira_get_issue", arguments: ["jiraID": .string("CLOUD-7863")])))
+        print("Used tokens: \(session.usedTokens)")
     }
 }
