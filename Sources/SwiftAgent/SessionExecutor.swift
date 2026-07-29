@@ -10,10 +10,17 @@ final class SessionExecutor<REQUEST: ModelRequest, RESPONSE: ModelResponse, MESS
     private var messages: [ModelMessage] = []
     let config: AgentConfig
     let tools: [Tool]?
+    let headers: [String: String]
 
     init(config: AgentConfig, tools: [Tool]?) {
         self.config = config
         self.tools = tools
+
+        var headers: [String: String] = [:]
+        if let token = config.authToken {
+            headers["Authorization"] = "Bearer \(token)"
+        }
+        self.headers = headers
     }
 
     func ask(_ prompt: String, model: String) async throws -> SessionResponse {
@@ -32,7 +39,7 @@ final class SessionExecutor<REQUEST: ModelRequest, RESPONSE: ModelResponse, MESS
         let response = await WebResponse<RESPONSE>
             .withTimeout(60)
             .post(url: config.modelUrl.trimming("/") + config.provider.path,
-                  body: dto)
+                  body: dto, headers: headers)
         switch response {
         case .failure(let httpError):
             if case .unserializablaResponse(let data) = httpError, let data {
@@ -69,7 +76,7 @@ final class SessionExecutor<REQUEST: ModelRequest, RESPONSE: ModelResponse, MESS
         let response = await WebResponse<RESPONSE>
             .withTimeout(60)
             .post(url: config.modelUrl.trimming("/") + config.provider.path,
-                  body: dto)
+                  body: dto, headers: headers)
         switch response {
         case .failure(let httpError):
             if case .unserializablaResponse(let data) = httpError, let data {
