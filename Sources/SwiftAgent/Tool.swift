@@ -29,11 +29,11 @@ public struct JSONSchema: Codable {
     }
 
     public struct Property: Codable {
-        public let type: String
+        public let type: ValueType
         public let description: String?
         public let enumValues: [String]?
 
-        public init(type: String, description: String?, enumValues: [String]?) {
+        public init(type: ValueType, description: String?, enumValues: [String]?) {
             self.type = type
             self.description = description
             self.enumValues = enumValues
@@ -43,6 +43,18 @@ public struct JSONSchema: Codable {
             case type
             case description
             case enumValues = "enum"
+        }
+
+        public enum ValueType: String, Codable {
+            case string
+            case integer
+            case number // default for Double
+            case boolean
+            case array
+            case object
+            case date
+            case uuid
+            case any
         }
     }
 }

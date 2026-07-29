@@ -6,6 +6,8 @@
 //
 
 enum RoleDto: String, Codable {
+    case system
     case user
     case assistant
+    case tool
 }

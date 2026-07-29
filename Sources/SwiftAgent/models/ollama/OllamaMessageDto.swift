@@ -7,19 +7,35 @@
 
 struct OllamaMessageDto: Codable {
     let role: RoleDto
+    let name: String?
     let content: String?
     let toolCalls: [OllamaToolCall]?
     let reasoning: String?
     let thinking: String?
 
+    init(role: RoleDto,
+         name: String? = nil,
+         content: String?,
+         toolCalls: [OllamaToolCall]? = nil,
+         reasoning: String? = nil,
+         thinking: String? = nil) {
+        self.role = role
+        self.name = name
+        self.content = content
+        self.toolCalls = toolCalls
+        self.reasoning = reasoning
+        self.thinking = thinking
+    }
+
     enum CodingKeys: String, CodingKey {
-        case role, content
+        case role, name, content
         case toolCalls = "tool_calls"
         case reasoning, thinking
     }
 }
 
 struct OllamaToolCall: Codable {
+    let type = "function"
     let function: OllamaToolFunction
     let id: String
 }
