@@ -13,11 +13,12 @@ let package = Package(
         .library(
             name: "SwiftAgent",
             targets: ["SwiftAgent"]
-        ),
+        )
     ],
     dependencies: [
         .package(url: "https://github.com/tomieq/WebResponse", branch: "master"),
-        .package(url: "https://github.com/tomieq/SwiftExtensions", .upToNextMajor(from: "2.0.0"))
+        .package(url: "https://github.com/tomieq/SwiftExtensions", .upToNextMajor(from: "2.0.0")),
+        .package(url: "https://github.com/tomieq/Logger", .upToNextMajor(from: "1.2.0"))
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -26,12 +27,13 @@ let package = Package(
             name: "SwiftAgent",
             dependencies: [
                 .product(name: "WebResponse", package: "WebResponse"),
-                .product(name: "SwiftExtensions", package: "SwiftExtensions")
+                .product(name: "SwiftExtensions", package: "SwiftExtensions"),
+                .product(name: "Logger", package: "Logger")
             ]
         ),
         .testTarget(
             name: "SwiftAgentTests",
             dependencies: ["SwiftAgent"]
-        ),
+        )
     ]
 )

@@ -4,6 +4,7 @@
 //
 //  Created by: tomieq on 28/07/2026
 //
+import Logger
 
 struct OpenAIMessageDto: Codable {
     let role: RoleDto
@@ -48,7 +49,7 @@ extension OpenAIMessageDto: ModelMessage {
         }
 
         guard let arguments: [String: JSONValue] = .init(json: firstCall.arguments) else {
-            print("Problem creating [String: JSONValue] from: \(firstCall.arguments)")
+            Logger("OpenAIMessageDto").e("Problem creating [String: JSONValue] from: \(firstCall.arguments)")
             return nil
         }
         return FunctionCall(name: firstCall.name, arguments: arguments)

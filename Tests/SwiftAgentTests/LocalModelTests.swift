@@ -7,6 +7,7 @@
 
 import Testing
 import SwiftAgent
+import Logger
 
 struct LocalOllamaTests {
     let model = "gemma4:e4b"
@@ -17,6 +18,7 @@ struct LocalOllamaTests {
     )
 
     @Test func localOllamaSimpleCalculation() async throws {
+        LoggerDispatcher.logLevel = .error
         let agent = SwiftAgent(config: config)
         let session = agent.session
         let response = try await session.ask("How many is 4+8?. Return just a number", model: model)
