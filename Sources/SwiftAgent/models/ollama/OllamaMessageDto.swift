@@ -34,6 +34,15 @@ struct OllamaMessageDto: Codable {
     }
 }
 
+extension OllamaMessageDto: ModelMessage {
+    init(role: RoleDto, name: String?, content: String) {
+        self.init(role: role,
+                  name: name,
+                  content: content,
+                  toolCalls: nil)
+    }
+}
+
 struct OllamaToolCall: Codable {
     let type = "function"
     let function: OllamaToolFunction

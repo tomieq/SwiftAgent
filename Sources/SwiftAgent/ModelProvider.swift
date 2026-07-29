@@ -9,3 +9,14 @@ public enum ModelProvider {
     case ollama
     case openAI // all OpenAI compatible protocols (vllm)
 }
+
+extension ModelProvider {
+    var path: String {
+        switch self {
+        case .ollama:
+            return "/api/chat"
+        case .openAI:
+            return "/chat/completions"
+        }
+    }
+}

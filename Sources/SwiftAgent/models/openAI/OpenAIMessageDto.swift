@@ -34,6 +34,15 @@ struct OpenAIMessageDto: Codable {
     }
 }
 
+extension OpenAIMessageDto: ModelMessage {
+    init(role: RoleDto, name: String?, content: String) {
+        self.init(role: role,
+                  name: name,
+                  content: content,
+                  toolCalls: nil)
+    }
+}
+
 struct OpenAIToolCall: Codable {
     let type = "function"
     let function: OpenAIToolFunction

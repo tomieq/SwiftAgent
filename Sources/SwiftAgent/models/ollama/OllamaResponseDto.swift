@@ -9,3 +9,9 @@ struct OllamaResponseDto: Codable {
     let message: OllamaMessageDto
     let model: String
 }
+
+extension OllamaResponseDto: ModelResponse {
+    var lastMessage: ModelMessage? {
+        self.message
+    }
+}

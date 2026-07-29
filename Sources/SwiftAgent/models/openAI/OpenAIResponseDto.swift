@@ -10,6 +10,12 @@ struct OpenAIResponseDto: Codable {
     let model: String
 }
 
+extension OpenAIResponseDto: ModelResponse {
+    var lastMessage: ModelMessage? {
+        self.choices.first?.message
+    }
+}
+
 struct OpenAIChoiceDto: Codable {
     let message: OpenAIMessageDto
     let finishReason: OpenAIFinishReason?
