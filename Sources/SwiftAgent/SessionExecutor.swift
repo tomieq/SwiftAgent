@@ -65,8 +65,8 @@ final class SessionExecutor<REQUEST: ModelRequest, RESPONSE: ModelResponse, MESS
             logger.d("response: \(body.json ?? "nil")")
             if let lastMessage = body.lastMessage {
                 messages.append(lastMessage)
-                if let call = lastMessage.toolCall {
-                    return .toolCall(call)
+                if lastMessage.calls.isEmpty.not {
+                    return .toolCall(lastMessage.calls)
                 }
                 return .text(lastMessage.content ?? "No answer")
             }
@@ -74,14 +74,16 @@ final class SessionExecutor<REQUEST: ModelRequest, RESPONSE: ModelResponse, MESS
         }
     }
 
-    func toolResponse(_ toolResponse: String, toolName: String, id: String, model: String) async throws -> SessionResponse {
-        messages.append(
-            MESSAGE(
-                role: .tool,
-                name: toolName,
-                toolCallID: id,
-                content: toolResponse)
-        )
+    func toolResponse(_ responses: [ToolResponse], model: String) async throws -> SessionResponse {
+        for response in responses {
+            messages.append(
+                MESSAGE(
+                    role: .tool,
+                    name: response.toolName,
+                    toolCallID: response.id,
+                    content: response.toolResponse)
+            )
+        }
 
         let dto = REQUEST(
             model: model,
@@ -104,8 +106,8 @@ final class SessionExecutor<REQUEST: ModelRequest, RESPONSE: ModelResponse, MESS
             logger.d("response: \(body.json ?? "nil")")
             if let lastMessage = body.lastMessage {
                 messages.append(lastMessage)
-                if let call = lastMessage.toolCall {
-                    return .toolCall(call)
+                if lastMessage.calls.isEmpty.not {
+                    return .toolCall(lastMessage.calls)
                 }
                 return .text(lastMessage.content ?? "No answer")
             }

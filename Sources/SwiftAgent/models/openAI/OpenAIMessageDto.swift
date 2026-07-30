@@ -48,17 +48,15 @@ extension OpenAIMessageDto: ModelMessage {
                   toolCallID: toolCallID)
     }
 
-    var toolCall: ToolCall? {
-        guard let call = toolCalls?.first else {
-            return nil
-        }
-
-        guard let arguments: [String: JSONValue] = .init(json: call.function.arguments) else {
-            Logger("OpenAIMessageDto").e("Problem creating [String: JSONValue] from: \(call.function.arguments)")
-            return nil
-        }
-        return ToolCall(id: call.id,
-                        function: FunctionCall(name: call.function.name,
-                                               arguments: arguments))
+    var calls: [ToolCall] {
+        toolCalls?.compactMap { call in
+            guard let arguments: [String: JSONValue] = .init(json: call.function.arguments) else {
+                Logger("OpenAIMessageDto").e("Problem creating [String: JSONValue] from: \(call.function.arguments)")
+                return nil
+            }
+            return ToolCall(id: call.id,
+                            function: FunctionCall(name: call.function.name,
+                                                   arguments: arguments))
+        } ?? []
     }
 }

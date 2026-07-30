@@ -48,12 +48,11 @@ extension OllamaMessageDto: ModelMessage {
         )
     }
 
-    var toolCall: ToolCall? {
-        guard let call = toolCalls?.first else {
-            return nil
-        }
-        return ToolCall(id: call.id,
-                        function: FunctionCall(name: call.function.name,
-                                               arguments: call.function.arguments))
+    var calls: [ToolCall] {
+        self.toolCalls?.map { call in
+            ToolCall(id: call.id,
+                     function: FunctionCall(name: call.function.name,
+                                            arguments: call.function.arguments))
+        } ?? []
     }
 }
