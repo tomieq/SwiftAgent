@@ -6,23 +6,48 @@
 //
 import WebResponse
 import SwiftAgent
+import SwiftExtensions
+import Logger
 
 public final class MCPAdapter {
-    public init() {}
+    let mcpData: [String: MCPData]
+    let logger = Logger(MCPAdapter.self)
+    let separator = "."
+
+    public init(configs: [MCPConfig]) {
+        var mcpData: [String: MCPData] = [:]
+        var index = 0
+        configs.forEach {
+            index.increment()
+            let id = "mcp\(index)"
+            mcpData[id] = MCPData(id: id, config: $0)
+        }
+        self.mcpData = mcpData
+    }
 
     public func getTools() async -> [Tool] {
+        var tools: [Tool] = []
+        for (id, mcpData) in mcpData {
+            let toolsFromMCP = await getTools(mcpData: mcpData)
+            tools.append(contentsOf: toolsFromMCP)
+            logger.i("Available tools for \(mcpData.id): \(tools.map{ $0.name }.joined(separator: ", "))")
+        }
+        return tools
+    }
+
+    func getTools(mcpData: MCPData) async -> [Tool] {
         var tools: [Tool] = []
         let command = Command(id: 1, method: "tools/list", params: nil)
         let response = await WebResponse<MCPResponse<ToolsList>>
             .withTimeout(20)
-            .post(url: "http://localhost:8080/mcp", body: command)
+            .post(url: mcpData.config.url, body: command)
         switch response {
         case .failure(let httpError):
             print("Error: \(httpError)")
         case .response(let dto, _):
             for schema in dto.result.tools {
                 let tool = Tool(
-                    name: schema.name,
+                    name: "\(mcpData.id)\(separator)\(schema.name)",
                     description: schema.description,
                     inputSchema: schema.inputSchema)
                 tools.append(tool)
@@ -32,14 +57,19 @@ public final class MCPAdapter {
     }
 
     public func call(function: FunctionCall) async -> String {
+        guard let mcpID = function.name.split(separator).first, let data = mcpData[mcpID] else {
+            logger.e("Invalid tool name \(function.name)")
+            return "Invalid tool name"
+        }
+        logger.i("Calling \(function.name)")
         let command = Command(id: 1,
                               method: "tools/call",
                               params: .init(protocolVersion: "1.0",
-                                            name: function.name,
+                                            name: function.name.removed(text: mcpID + separator),
                                             arguments: function.arguments))
         let response = await WebResponse<MCPResponse<ToolResult>>
             .withTimeout(20)
-            .post(url: "http://localhost:8080/mcp", body: command)
+            .post(url: data.config.url, body: command)
         switch response {
         case .failure(let httpError):
             return "Error: \(httpError)"
@@ -47,4 +77,9 @@ public final class MCPAdapter {
             return dto.result.content.map{ $0.text }.jsonOneLine ?? "No data"
         }
     }
+}
+
+struct MCPData {
+    let id: String
+    let config: MCPConfig
 }
