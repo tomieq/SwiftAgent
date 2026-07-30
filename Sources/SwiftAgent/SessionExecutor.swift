@@ -30,6 +30,7 @@ final class SessionExecutor<REQUEST: ModelRequest, RESPONSE: ModelResponse, MESS
             self.messages.append(
                 MESSAGE(role: .system,
                         name: nil,
+                        toolCallID: nil,
                         content: systemMessage)
             )
         }
@@ -40,6 +41,7 @@ final class SessionExecutor<REQUEST: ModelRequest, RESPONSE: ModelResponse, MESS
             MESSAGE(
                 role: .user,
                 name: nil,
+                toolCallID: nil,
                 content: prompt)
         )
         let dto = REQUEST(
@@ -63,8 +65,8 @@ final class SessionExecutor<REQUEST: ModelRequest, RESPONSE: ModelResponse, MESS
             logger.d("response: \(body.json ?? "nil")")
             if let lastMessage = body.lastMessage {
                 messages.append(lastMessage)
-                if let functionCall = lastMessage.functionCall {
-                    return .functionCall(functionCall)
+                if let call = lastMessage.toolCall {
+                    return .toolCall(call)
                 }
                 return .text(lastMessage.content ?? "No answer")
             }
@@ -72,11 +74,12 @@ final class SessionExecutor<REQUEST: ModelRequest, RESPONSE: ModelResponse, MESS
         }
     }
 
-    func toolResponse(_ toolResponse: String, toolName: String, model: String) async throws -> SessionResponse {
+    func toolResponse(_ toolResponse: String, toolName: String, id: String, model: String) async throws -> SessionResponse {
         messages.append(
             MESSAGE(
                 role: .tool,
                 name: toolName,
+                toolCallID: id,
                 content: toolResponse)
         )
 
@@ -101,8 +104,8 @@ final class SessionExecutor<REQUEST: ModelRequest, RESPONSE: ModelResponse, MESS
             logger.d("response: \(body.json ?? "nil")")
             if let lastMessage = body.lastMessage {
                 messages.append(lastMessage)
-                if let functionCall = lastMessage.functionCall {
-                    return .functionCall(functionCall)
+                if let call = lastMessage.toolCall {
+                    return .toolCall(call)
                 }
                 return .text(lastMessage.content ?? "No answer")
             }

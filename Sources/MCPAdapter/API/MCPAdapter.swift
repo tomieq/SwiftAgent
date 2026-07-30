@@ -12,7 +12,7 @@ import Logger
 public final class MCPAdapter {
     let mcpData: [String: MCPData]
     let logger = Logger(MCPAdapter.self)
-    let separator = "."
+    let separator = "-"
 
     public init(configs: [MCPConfig]) {
         var mcpData: [String: MCPData] = [:]

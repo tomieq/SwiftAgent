@@ -6,7 +6,7 @@
 //
 
 protocol ModelMessage {
-    init(role: RoleDto, name: String?, content: String)
+    init(role: RoleDto, name: String?, toolCallID: String?, content: String)
     var content: String? { get }
-    var functionCall: FunctionCall? { get }
+    var toolCall: ToolCall? { get }
 }

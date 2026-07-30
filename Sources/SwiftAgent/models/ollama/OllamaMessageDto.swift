@@ -12,41 +12,48 @@ struct OllamaMessageDto: Codable {
     let toolCalls: [OllamaToolCall]?
     let reasoning: String?
     let thinking: String?
+    let toolCallID: String?
 
     init(role: RoleDto,
          name: String? = nil,
          content: String?,
          toolCalls: [OllamaToolCall]? = nil,
          reasoning: String? = nil,
-         thinking: String? = nil) {
+         thinking: String? = nil,
+         toolCallID: String? = nil) {
         self.role = role
         self.name = name
         self.content = content
         self.toolCalls = toolCalls
         self.reasoning = reasoning
         self.thinking = thinking
+        self.toolCallID = toolCallID
     }
 
     enum CodingKeys: String, CodingKey {
         case role, name, content
         case toolCalls = "tool_calls"
         case reasoning, thinking
+        case toolCallID = "tool_call_id"
     }
 }
 
 extension OllamaMessageDto: ModelMessage {
-    init(role: RoleDto, name: String?, content: String) {
+    init(role: RoleDto, name: String?, toolCallID: String?, content: String) {
         self.init(role: role,
                   name: name,
                   content: content,
-                  toolCalls: nil)
+                  toolCalls: nil,
+                  toolCallID: toolCallID
+        )
     }
 
-    var functionCall: FunctionCall? {
-        guard let firstCall = toolCalls?.first?.function else {
+    var toolCall: ToolCall? {
+        guard let call = toolCalls?.first else {
             return nil
         }
-
-        return FunctionCall(name: firstCall.name, arguments: firstCall.arguments)
+        return ToolCall(id: call.id,
+                        function: FunctionCall(name: call.function.name,
+                                               arguments: call.function.arguments))
     }
 }

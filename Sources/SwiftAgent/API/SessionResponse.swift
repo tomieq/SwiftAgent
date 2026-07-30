@@ -7,5 +7,5 @@
 
 public enum SessionResponse: Equatable {
     case text(String)
-    case functionCall(FunctionCall)
+    case toolCall(ToolCall)
 }
