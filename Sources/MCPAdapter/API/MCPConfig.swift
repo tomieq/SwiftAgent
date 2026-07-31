@@ -6,7 +6,7 @@
 //
 
 public struct MCPConfig {
-    let name: String
+    public let name: String
     let url: String
     let authToken: String?
 
