@@ -12,14 +12,14 @@ import Logger
 public final class MCPAdapter {
     let mcpData: [String: MCPData]
     let logger = Logger(MCPAdapter.self)
-    let separator = "-"
+    static let separator = "_"
 
     public init(configs: [MCPConfig]) {
         var mcpData: [String: MCPData] = [:]
         var index = 0
         configs.forEach {
             index.increment()
-            let id = "mcp\(index)"
+            let id = "\($0.name.removed(text: Self.separator))\(index)"
             mcpData[id] = MCPData(id: id, config: $0)
         }
         self.mcpData = mcpData
@@ -27,7 +27,7 @@ public final class MCPAdapter {
 
     public func getTools() async -> [Tool] {
         var tools: [Tool] = []
-        for (id, mcpData) in mcpData {
+        for (_, mcpData) in mcpData {
             let toolsFromMCP = await getTools(mcpData: mcpData)
             tools.append(contentsOf: toolsFromMCP)
             logger.i("Available tools for \(mcpData.id): \(tools.map{ $0.name }.joined(separator: ", "))")
@@ -47,7 +47,7 @@ public final class MCPAdapter {
         case .response(let dto, _):
             for schema in dto.result.tools {
                 let tool = Tool(
-                    name: "\(mcpData.id)\(separator)\(schema.name)",
+                    name: "\(mcpData.id)\(Self.separator)\(schema.name)",
                     description: schema.description,
                     inputSchema: schema.inputSchema)
                 tools.append(tool)
@@ -57,7 +57,7 @@ public final class MCPAdapter {
     }
 
     public func call(function: FunctionCall) async -> String {
-        guard let mcpID = function.name.split(separator).first, let data = mcpData[mcpID] else {
+        guard let mcpID = function.name.split(Self.separator).first, let data = mcpData[mcpID] else {
             logger.e("Invalid tool name \(function.name)")
             return "Invalid tool name"
         }
@@ -65,7 +65,7 @@ public final class MCPAdapter {
         let command = Command(id: 1,
                               method: "tools/call",
                               params: .init(protocolVersion: "1.0",
-                                            name: function.name.removed(text: mcpID + separator),
+                                            name: function.name.removed(text: mcpID + Self.separator),
                                             arguments: function.arguments))
         let response = await WebResponse<MCPResponse<ToolResult>>
             .withTimeout(20)
