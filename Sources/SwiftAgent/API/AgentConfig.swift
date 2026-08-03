@@ -6,11 +6,13 @@
 //
 
 public struct AgentConfig {
+    public let name: String
     let provider: ModelProvider
     let modelUrl: String
     let authToken: String?
 
-    public init(provider: ModelProvider, modelUrl: String, authToken: String? = nil) {
+    public init(name: String, provider: ModelProvider, modelUrl: String, authToken: String? = nil) {
+        self.name = name
         self.provider = provider
         self.modelUrl = modelUrl
         self.authToken = authToken
