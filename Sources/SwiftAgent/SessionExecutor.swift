@@ -52,7 +52,7 @@ final class SessionExecutor<REQUEST: ModelRequest, RESPONSE: ModelResponse, MESS
         logger.d("sending: \(dto.json ?? "nil")")
         let response = await WebResponse<RESPONSE>
             .withTimeout(60)
-            .post(url: config.modelUrl.trimming("/") + config.provider.path,
+            .post(url: config.modelUrl.trimming("/") + config.provider.promptPath,
                   body: dto, headers: headers)
         switch response {
         case .failure(let httpError):
@@ -93,7 +93,7 @@ final class SessionExecutor<REQUEST: ModelRequest, RESPONSE: ModelResponse, MESS
         logger.d("sending: \(dto.json ?? "nil")")
         let response = await WebResponse<RESPONSE>
             .withTimeout(60)
-            .post(url: config.modelUrl.trimming("/") + config.provider.path,
+            .post(url: config.modelUrl.trimming("/") + config.provider.promptPath,
                   body: dto, headers: headers)
         switch response {
         case .failure(let httpError):

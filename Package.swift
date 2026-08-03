@@ -43,7 +43,7 @@ let package = Package(
         ),
         .testTarget(
             name: "SwiftAgentTests",
-            dependencies: ["SwiftAgent"]
+            dependencies: ["SwiftAgent", "MCPAdapter"]
         ),
         .testTarget(
             name: "MCPAdapterTests",

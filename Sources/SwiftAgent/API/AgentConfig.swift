@@ -16,3 +16,14 @@ public struct AgentConfig {
         self.authToken = authToken
     }
 }
+
+extension AgentConfig {
+    public func models() async -> [String] {
+        switch self.provider {
+        case .ollama:
+            await ModelFetcher<OllamaModelList>().fetch(self)
+        case .openAI:
+            await ModelFetcher<OpenAIModelList>().fetch(self)
+        }
+    }
+}
