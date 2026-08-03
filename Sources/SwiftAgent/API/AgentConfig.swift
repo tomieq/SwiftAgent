@@ -7,15 +7,21 @@
 
 public struct AgentConfig {
     public let name: String
+    public let preferredModel: String?
     let provider: ModelProvider
     let modelUrl: String
     let authToken: String?
 
-    public init(name: String, provider: ModelProvider, modelUrl: String, authToken: String? = nil) {
+    public init(name: String,
+                provider: ModelProvider,
+                modelUrl: String,
+                authToken: String? = nil,
+                preferredModel: String?) {
         self.name = name
         self.provider = provider
         self.modelUrl = modelUrl
         self.authToken = authToken
+        self.preferredModel = preferredModel
     }
 }
 
