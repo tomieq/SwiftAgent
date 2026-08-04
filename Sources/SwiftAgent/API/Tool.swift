@@ -9,12 +9,12 @@ public struct Tool: Codable {
     public let name: String
     public let description: String?
     public let inputSchema: JSONSchema
+    public let outputSchema: JSONSchema?
 
-    public init(name: String, description: String?, inputSchema: JSONSchema) {
+    public init(name: String, description: String?, inputSchema: JSONSchema, outputSchema: JSONSchema?) {
         self.name = name
         self.description = description
         self.inputSchema = inputSchema
+        self.outputSchema = outputSchema
     }
 }
-
-

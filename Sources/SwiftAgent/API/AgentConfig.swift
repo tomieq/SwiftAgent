@@ -16,7 +16,7 @@ public struct AgentConfig {
                 provider: ModelProvider,
                 modelUrl: String,
                 authToken: String? = nil,
-                preferredModel: String?) {
+                preferredModel: String? = nil) {
         self.name = name
         self.provider = provider
         self.modelUrl = modelUrl

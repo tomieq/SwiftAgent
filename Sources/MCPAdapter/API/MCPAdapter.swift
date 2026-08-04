@@ -49,7 +49,8 @@ public final class MCPAdapter {
                 let tool = Tool(
                     name: "\(mcpData.id)\(Self.separator)\(schema.name)",
                     description: schema.description,
-                    inputSchema: schema.inputSchema)
+                    inputSchema: schema.inputSchema,
+                    outputSchema: schema.outputSchema)
                 tools.append(tool)
             }
         }
@@ -74,7 +75,7 @@ public final class MCPAdapter {
         case .failure(let httpError):
             return "Error: \(httpError)"
         case .response(let dto, _):
-            return dto.result.content.map{ $0.text }.jsonOneLine ?? "No data"
+            return dto.result.structuredContent?.jsonOneLine ?? dto.result.content.map{ $0.text }.joined(separator: "\n")
         }
     }
 }

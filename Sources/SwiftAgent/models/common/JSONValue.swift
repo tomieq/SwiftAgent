@@ -4,6 +4,7 @@
 //
 //  Created by: tomieq on 29/07/2026
 //
+import Foundation
 
 public enum JSONValue: Codable, Equatable, Sendable {
     case null
@@ -13,6 +14,11 @@ public enum JSONValue: Codable, Equatable, Sendable {
     case string(String)
     indirect case array([JSONValue])
     indirect case object([String: JSONValue])
+
+    public init<T: Encodable>(encoding value: T) throws {
+        let data = try JSONEncoder().encode(value)
+        self = try JSONDecoder().decode(JSONValue.self, from: data)
+    }
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()

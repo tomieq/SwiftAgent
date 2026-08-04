@@ -14,5 +14,6 @@ struct ToolsList: Codable {
         let name: String
         let description: String
         let inputSchema: JSONSchema
+        let outputSchema: JSONSchema?
     }
 }
