@@ -6,8 +6,8 @@
 //
 
 struct OpenAIUsageDto: Codable {
-    let promptTokens: Int
-    let completionTokens: Int
+    let promptTokens: Int // iput tokens
+    let completionTokens: Int // output tokens
     let totalTokens: Int
 
     enum CodingKeys: String, CodingKey {

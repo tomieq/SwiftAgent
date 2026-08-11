@@ -19,6 +19,14 @@ extension OpenAIResponseDto: ModelResponse {
     var usedTokens: Int {
         usage.totalTokens
     }
+
+    var inputTokens: Int {
+        usage.promptTokens
+    }
+
+    var outputTokens: Int {
+        usage.completionTokens
+    }
 }
 
 struct OpenAIChoiceDto: Codable {

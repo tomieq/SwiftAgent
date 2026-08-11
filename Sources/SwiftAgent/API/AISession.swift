@@ -6,7 +6,7 @@
 //
 
 public protocol AISession {
-    func ask(_ prompt: String, model: String) async throws -> SessionResponse
-    func toolResponse(_ responses: [ToolResponse], model: String) async throws -> SessionResponse
+    func ask(_ prompt: String, model: String) async throws -> AIResponse
+    func toolResponse(_ responses: [ToolResponse], model: String) async throws -> AIResponse
     var usedTokens: Int { get }
 }

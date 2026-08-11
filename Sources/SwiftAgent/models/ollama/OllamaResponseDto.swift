@@ -8,8 +8,8 @@
 struct OllamaResponseDto: Codable {
     let message: OllamaMessageDto
     let model: String
-    let promptTokens: Int
-    let completionTokens: Int
+    let promptTokens: Int // input tokens
+    let completionTokens: Int // output tokens
 
     enum CodingKeys: String, CodingKey {
         case message
@@ -26,5 +26,13 @@ extension OllamaResponseDto: ModelResponse {
 
     var usedTokens: Int {
         promptTokens + completionTokens
+    }
+
+    var inputTokens: Int {
+        promptTokens
+    }
+
+    var outputTokens: Int {
+        completionTokens
     }
 }

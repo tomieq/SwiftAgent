@@ -8,4 +8,6 @@
 protocol ModelResponse: Codable {
     var lastMessage: ModelMessage? { get }
     var usedTokens: Int { get }
+    var inputTokens: Int { get }
+    var outputTokens: Int { get }
 }

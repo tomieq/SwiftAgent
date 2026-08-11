@@ -36,7 +36,7 @@ final class SessionExecutor<REQUEST: ModelRequest, RESPONSE: ModelResponse, MESS
         }
     }
 
-    func ask(_ prompt: String, model: String) async throws -> SessionResponse {
+    func ask(_ prompt: String, model: String) async throws -> AIResponse {
         messages.append(
             MESSAGE(
                 role: .user,
@@ -66,15 +66,15 @@ final class SessionExecutor<REQUEST: ModelRequest, RESPONSE: ModelResponse, MESS
             if let lastMessage = body.lastMessage {
                 messages.append(lastMessage)
                 if lastMessage.calls.isEmpty.not {
-                    return .toolCall(lastMessage.calls)
+                    return respond(.toolCall(lastMessage.calls), with: body)
                 }
-                return .text(lastMessage.content ?? "No answer")
+                return respond(.text(lastMessage.content ?? "No answer"), with: body)
             }
-            return .text("No message")
+            return respond(.text("No message"), with: body)
         }
     }
 
-    func toolResponse(_ responses: [ToolResponse], model: String) async throws -> SessionResponse {
+    func toolResponse(_ responses: [ToolResponse], model: String) async throws -> AIResponse {
         for response in responses {
             messages.append(
                 MESSAGE(
@@ -107,11 +107,18 @@ final class SessionExecutor<REQUEST: ModelRequest, RESPONSE: ModelResponse, MESS
             if let lastMessage = body.lastMessage {
                 messages.append(lastMessage)
                 if lastMessage.calls.isEmpty.not {
-                    return .toolCall(lastMessage.calls)
+                    return respond(.toolCall(lastMessage.calls), with: body)
                 }
-                return .text(lastMessage.content ?? "No answer")
+                return respond(.text(lastMessage.content ?? "No answer"), with: body)
             }
-            return .text("No message")
+            return respond(.text("No message"), with: body)
         }
+    }
+
+    private func respond(_ response: SessionResponse, with body: RESPONSE) -> AIResponse {
+        AIResponse(
+            sessionReponse: response,
+            inputTokens: body.inputTokens,
+            outputTokens: body.outputTokens)
     }
 }
