@@ -6,5 +6,5 @@
 //
 
 protocol ModelRequest: Codable {
-    init(model: String, messages: [ModelMessage], tools: [CommonTool]?)
+    init(model: String, messages: [ModelMessage], tools: [CommonTool]?, reasoningEffort: ReasoningEffort?)
 }

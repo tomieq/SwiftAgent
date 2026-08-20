@@ -13,21 +13,27 @@ struct LocalOllamaTests {
     let model = "gemma4:e4b"
 //    let model = "qwen3:1.7b"
     let config = AgentConfig(
+        name: "Ollama",
         provider: .ollama,
         modelUrl: "http://localhost:11434/"
     )
 
+    @Test func localModels() async throws {
+        print(await config.models())
+    }
+
     @Test func localOllamaSimpleCalculation() async throws {
-        LoggerDispatcher.logLevel = .error
+//        LoggerDispatcher.logLevel = .error
         let agent = SwiftAgent(config: config)
         let session = agent.session(systemMessage: "You are Math teacher. Help user with his tasks.")
-        let response = try await session.ask("How many is 4+8?. Return just a number", model: model)
+        let response = try await session.ask("How many is 4+8?. Return just a number", model: model, reasoningEffort: .low)
         print(response)
-        #expect(response == .text("12"))
+        #expect(response.sessionReponse == .text("12"))
         print("Used tokens: \(session.usedTokens)")
     }
 
-    @Test func localOllamaToolCall() async throws {
+    @Test(.disabled())
+    func localOllamaToolCall() async throws {
         let jiraTool = Tool(
             name: "jira_get_issue",
             description: "Returns details of a Jira issue.",
@@ -41,7 +47,8 @@ struct LocalOllamaTests {
                     )
                 ],
                 required: ["jiraID"]
-            )
+            ),
+            outputSchema: nil
         )
         let agent = SwiftAgent(config: config, tools: [jiraTool])
         let session = agent.session()

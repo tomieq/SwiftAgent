@@ -186,6 +186,8 @@ while case .toolCall(let calls) = response.sessionReponse {
 | `preferredModel` | Optional application-defined preferred model. |
 | `maxThinkingTimeInSecods` | Request timeout in seconds; defaults to `60`. |
 
+Set an OpenAI-compatible reasoning level per request with `reasoningEffort`, for example `session.ask("Summarize this", model: "gpt-5", reasoningEffort: .high)`. Available values are `.low`, `.medium`, `.high`, and `.xhigh`.
+
 ## Development
 
 Build the package on macOS:

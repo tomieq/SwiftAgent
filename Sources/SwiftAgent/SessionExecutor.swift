@@ -36,7 +36,7 @@ final class SessionExecutor<REQUEST: ModelRequest, RESPONSE: ModelResponse, MESS
         }
     }
 
-    func ask(_ prompt: String, model: String) async throws -> AIResponse {
+    func ask(_ prompt: String, model: String, reasoningEffort: ReasoningEffort?) async throws -> AIResponse {
         messages.append(
             MESSAGE(
                 role: .user,
@@ -47,7 +47,8 @@ final class SessionExecutor<REQUEST: ModelRequest, RESPONSE: ModelResponse, MESS
         let dto = REQUEST(
             model: model,
             messages: messages,
-            tools: tools?.map{ CommonTool(tool: $0) }
+            tools: tools?.map{ CommonTool(tool: $0) },
+            reasoningEffort: reasoningEffort
         )
         logger.d("sending: \(dto.json ?? "nil")")
         let response = await WebResponse<RESPONSE>
@@ -74,7 +75,7 @@ final class SessionExecutor<REQUEST: ModelRequest, RESPONSE: ModelResponse, MESS
         }
     }
 
-    func toolResponse(_ responses: [ToolResponse], model: String) async throws -> AIResponse {
+    func toolResponse(_ responses: [ToolResponse], model: String, reasoningEffort: ReasoningEffort?) async throws -> AIResponse {
         for response in responses {
             messages.append(
                 MESSAGE(
@@ -88,7 +89,8 @@ final class SessionExecutor<REQUEST: ModelRequest, RESPONSE: ModelResponse, MESS
         let dto = REQUEST(
             model: model,
             messages: messages,
-            tools: tools?.map{ CommonTool(tool: $0) }
+            tools: tools?.map{ CommonTool(tool: $0) },
+            reasoningEffort: reasoningEffort
         )
         logger.d("sending: \(dto.json ?? "nil")")
         let response = await WebResponse<RESPONSE>
