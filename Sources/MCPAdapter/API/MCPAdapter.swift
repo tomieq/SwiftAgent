@@ -16,10 +16,8 @@ public final class MCPAdapter {
 
     public init(configs: [MCPConfig]) {
         var mcpData: [String: MCPData] = [:]
-        var index = 0
         configs.forEach {
-            index.increment()
-            let id = "\($0.name.removed(text: Self.separator))\(index)"
+            let id = $0.name.removed(text: Self.separator)
             mcpData[id] = MCPData(id: id, config: $0)
         }
         self.mcpData = mcpData
