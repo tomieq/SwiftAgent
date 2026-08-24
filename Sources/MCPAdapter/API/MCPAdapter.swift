@@ -63,11 +63,15 @@ public final class MCPAdapter {
             logger.e("Invalid tool name \(function.name)")
             return "Invalid tool name"
         }
+        guard let toolName = Self.toolName(from: function.name, mcpID: mcpID) else {
+            logger.e("Invalid tool name \(function.name)")
+            return "Invalid tool name"
+        }
         logger.i("Calling \(function.name)")
         let command = Command(id: 1,
                               method: "tools/call",
                               params: .init(protocolVersion: "1.0",
-                                            name: function.name.removed(text: mcpID + Self.separator),
+                                            name: toolName,
                                             arguments: function.arguments))
         let response = await WebResponse<MCPResponse<ToolResult>>
             .withTimeout(20)
@@ -78,6 +82,14 @@ public final class MCPAdapter {
         case .response(let dto, _):
             return dto.result.structuredContent?.jsonOneLine ?? dto.result.content.map{ $0.text }.joined(separator: "\n")
         }
+    }
+
+    static func toolName(from functionName: String, mcpID: String) -> String? {
+        let prefix = mcpID + Self.separator
+        guard functionName.hasPrefix(prefix) else {
+            return nil
+        }
+        return String(functionName.dropFirst(prefix.count))
     }
 }
 
