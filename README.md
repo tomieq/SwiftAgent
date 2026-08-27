@@ -130,6 +130,25 @@ print("Tokens used: \(session.usedTokens)")
 
 Tool arguments are available in `call.function.arguments` as `[String: JSONValue]`.
 
+## Retrying Failed Requests
+
+If `ask` or `toolResponse` throws because the model request fails, call `retry()` on the same session to resend the pending conversation without adding the prompt or tool responses again. The retry uses the model, reasoning effort, and timeout from the failed request.
+
+```swift
+let session = agent.session()
+
+do {
+    let response = try await session.ask(
+        "What is 2 + 7?",
+        model: "gpt-4.1-mini"
+    )
+    print(response)
+} catch {
+    let response = try await session.retry()
+    print(response)
+}
+```
+
 ## MCP Adapter
 
 `MCPAdapter` discovers tools from one or more HTTP MCP servers and adapts them to SwiftAgent `Tool` values. Tool names are namespaced automatically, so an adapter can connect to multiple servers.
