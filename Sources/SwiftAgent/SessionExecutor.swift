@@ -6,6 +6,7 @@
 //
 import WebResponse
 import Logger
+import Foundation
 
 final class SessionExecutor<REQUEST: ModelRequest, RESPONSE: ModelResponse, MESSAGE: ModelMessage>: AISession {
     private var messages: [ModelMessage] = []
@@ -14,6 +15,7 @@ final class SessionExecutor<REQUEST: ModelRequest, RESPONSE: ModelResponse, MESS
     let tools: [Tool]?
     let headers: [String: String]
     var usedTokens: Int = 0
+    private var lastRequest: (model: String, reasoningEffort: ReasoningEffort?)?
 
     init(config: AgentConfig,
          tools: [Tool]?,
@@ -44,35 +46,9 @@ final class SessionExecutor<REQUEST: ModelRequest, RESPONSE: ModelResponse, MESS
                 toolCallID: nil,
                 content: prompt)
         )
-        let dto = REQUEST(
-            model: model,
-            messages: messages,
-            tools: tools?.map{ CommonTool(tool: $0) },
-            reasoningEffort: reasoningEffort
-        )
-        logger.d("sending: \(dto.json ?? "nil")")
-        let response = await WebResponse<RESPONSE>
-            .withTimeout(config.maxThinkingTimeInSecods)
-            .post(url: config.modelUrl.trimming("/") + config.provider.promptPath,
-                  body: dto, headers: headers)
-        switch response {
-        case .failure(let httpError):
-            if case .unserializablaResponse(let data) = httpError, let data {
-                logger.e("unserializable response: \(String(data: data, encoding: .utf8) ?? "nil")")
-            }
-            throw httpError
-        case .response(let body, _):
-            usedTokens += body.usedTokens
-            logger.d("response: \(body.json ?? "nil")")
-            if let lastMessage = body.lastMessage {
-                messages.append(lastMessage)
-                if lastMessage.calls.isEmpty.not {
-                    return respond(.toolCall(lastMessage.calls), with: body)
-                }
-                return respond(.text(lastMessage.content ?? "No answer"), with: body)
-            }
-            return respond(.text("No message"), with: body)
-        }
+        let request = (model, reasoningEffort)
+        lastRequest = request
+        return try await send(request)
     }
 
     func toolResponse(_ responses: [ToolResponse], model: String, reasoningEffort: ReasoningEffort?) async throws -> AIResponse {
@@ -86,15 +62,30 @@ final class SessionExecutor<REQUEST: ModelRequest, RESPONSE: ModelResponse, MESS
             )
         }
 
+        let request = (model, reasoningEffort)
+        lastRequest = request
+        return try await send(request)
+    }
+
+    func retry() async throws -> AIResponse {
+        guard let lastRequest else {
+            throw RetryError.noPreviousRequest
+        }
+
+        return try await send(lastRequest, isRetry: true)
+    }
+
+    private func send(_ request: (model: String, reasoningEffort: ReasoningEffort?),
+                      isRetry: Bool = false) async throws -> AIResponse {
         let dto = REQUEST(
-            model: model,
+            model: request.model,
             messages: messages,
-            tools: tools?.map{ CommonTool(tool: $0) },
-            reasoningEffort: reasoningEffort
+            tools: tools?.map { CommonTool(tool: $0) },
+            reasoningEffort: request.reasoningEffort
         )
-        logger.d("sending: \(dto.json ?? "nil")")
+        logger.d("\(isRetry ? "retrying" : "sending"): \(dto.json ?? "nil")")
         let response = await WebResponse<RESPONSE>
-            .withTimeout(60)
+            .withTimeout(config.maxThinkingTimeInSecods)
             .post(url: config.modelUrl.trimming("/") + config.provider.promptPath,
                   body: dto, headers: headers)
         switch response {

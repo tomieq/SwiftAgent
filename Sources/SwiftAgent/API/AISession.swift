@@ -8,6 +8,7 @@
 public protocol AISession {
     func ask(_ prompt: String, model: String, reasoningEffort: ReasoningEffort?) async throws -> AIResponse
     func toolResponse(_ responses: [ToolResponse], model: String, reasoningEffort: ReasoningEffort?) async throws -> AIResponse
+    func retry() async throws -> AIResponse
     var usedTokens: Int { get }
 }
 
