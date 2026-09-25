@@ -39,9 +39,13 @@ public final class MCPAdapter {
     func getTools(mcpData: MCPData) async -> [Tool] {
         var tools: [Tool] = []
         let command = Command(id: 1, method: "tools/list", params: nil)
+        var headers: [String: String] = [:]
+        if let token = mcpData.config.authToken {
+            headers["Authorization"] = "Bearer \(token)"
+        }
         let response = await WebResponse<MCPResponse<ToolsList>>
             .withTimeout(20)
-            .post(url: mcpData.config.url, body: command)
+            .post(url: mcpData.config.url, body: command, headers: headers)
         switch response {
         case .failure(let httpError):
             print("Error: \(httpError)")
@@ -73,9 +77,13 @@ public final class MCPAdapter {
                               params: .init(protocolVersion: "1.0",
                                             name: toolName,
                                             arguments: function.arguments))
+        var headers: [String: String] = [:]
+        if let token = data.config.authToken {
+            headers["Authorization"] = "Bearer \(token)"
+        }
         let response = await WebResponse<MCPResponse<ToolResult>>
             .withTimeout(20)
-            .post(url: data.config.url, body: command)
+            .post(url: data.config.url, body: command, headers: headers)
         switch response {
         case .failure(let httpError):
             return "Error: \(httpError)"
