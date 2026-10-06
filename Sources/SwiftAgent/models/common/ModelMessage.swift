@@ -9,4 +9,5 @@ protocol ModelMessage {
     init(role: RoleDto, name: String?, toolCallID: String?, content: String)
     var content: String? { get }
     var calls: [ToolCall] { get }
+    var thinkingText: String? { get }
 }

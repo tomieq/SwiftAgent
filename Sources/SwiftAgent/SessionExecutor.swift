@@ -100,7 +100,7 @@ final class SessionExecutor<REQUEST: ModelRequest, RESPONSE: ModelResponse, MESS
             if let lastMessage = body.lastMessage {
                 messages.append(lastMessage)
                 if lastMessage.calls.isEmpty.not {
-                    return respond(.toolCall(lastMessage.calls), with: body)
+                    return respond(.toolCall(lastMessage.calls, reasoning: lastMessage.thinkingText), with: body)
                 }
                 return respond(.text(lastMessage.content ?? "No answer"), with: body)
             }

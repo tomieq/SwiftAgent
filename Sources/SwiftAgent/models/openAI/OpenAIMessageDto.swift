@@ -59,4 +59,8 @@ extension OpenAIMessageDto: ModelMessage {
                                                    arguments: arguments))
         } ?? []
     }
+
+    var thinkingText: String? {
+        self.thinking ?? self.reasoning
+    }
 }

@@ -55,4 +55,8 @@ extension OllamaMessageDto: ModelMessage {
                                             arguments: call.function.arguments))
         } ?? []
     }
+
+    var thinkingText: String? {
+        self.thinking ?? self.reasoning
+    }
 }
