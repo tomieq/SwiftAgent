@@ -15,7 +15,7 @@ final class SessionExecutor<REQUEST: ModelRequest, RESPONSE: ModelResponse, MESS
     let tools: [Tool]?
     let headers: [String: String]
     var usedTokens: Int = 0
-    private var lastRequest: (model: String, reasoningEffort: ReasoningEffort?)?
+    private var lastModel: String?
 
     init(config: AgentConfig,
          tools: [Tool]?,
@@ -38,7 +38,7 @@ final class SessionExecutor<REQUEST: ModelRequest, RESPONSE: ModelResponse, MESS
         }
     }
 
-    func ask(_ prompt: String, model: String, reasoningEffort: ReasoningEffort?) async throws -> AIResponse {
+    func ask(_ prompt: String, model: String) async throws -> AIResponse {
         messages.append(
             MESSAGE(
                 role: .user,
@@ -46,12 +46,11 @@ final class SessionExecutor<REQUEST: ModelRequest, RESPONSE: ModelResponse, MESS
                 toolCallID: nil,
                 content: prompt)
         )
-        let request = (model, reasoningEffort)
-        lastRequest = request
-        return try await send(request)
+        self.lastModel = model
+        return try await send(model: model)
     }
 
-    func toolResponse(_ responses: [ToolResponse], model: String, reasoningEffort: ReasoningEffort?) async throws -> AIResponse {
+    func toolResponse(_ responses: [ToolResponse], model: String) async throws -> AIResponse {
         for response in responses {
             messages.append(
                 MESSAGE(
@@ -62,26 +61,24 @@ final class SessionExecutor<REQUEST: ModelRequest, RESPONSE: ModelResponse, MESS
             )
         }
 
-        let request = (model, reasoningEffort)
-        lastRequest = request
-        return try await send(request)
+        self.lastModel = model
+        return try await send(model: model)
     }
 
     func retry() async throws -> AIResponse {
-        guard let lastRequest else {
+        guard let model = self.lastModel else {
             throw RetryError.noPreviousRequest
         }
 
-        return try await send(lastRequest, isRetry: true)
+        return try await send(model: model, isRetry: true)
     }
 
-    private func send(_ request: (model: String, reasoningEffort: ReasoningEffort?),
+    private func send(model: String,
                       isRetry: Bool = false) async throws -> AIResponse {
         let dto = REQUEST(
-            model: request.model,
+            model: model,
             messages: messages,
-            tools: tools?.map { CommonTool(tool: $0) },
-            reasoningEffort: request.reasoningEffort
+            tools: tools?.map { CommonTool(tool: $0) }
         )
         logger.d("\(isRetry ? "retrying" : "sending"): \(dto.json ?? "nil")")
         let response = await WebResponse<RESPONSE>

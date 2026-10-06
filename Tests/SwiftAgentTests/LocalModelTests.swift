@@ -26,7 +26,7 @@ struct LocalOllamaTests {
 //        LoggerDispatcher.logLevel = .error
         let agent = SwiftAgent(config: config)
         let session = agent.session(systemMessage: "You are Math teacher. Help user with his tasks.")
-        let response = try await session.ask("How many is 4+8?. Return just a number", model: model, reasoningEffort: .low)
+        let response = try await session.ask("How many is 4+8?. Return just a number", model: model)
         print(response)
         #expect(response.sessionReponse == .text("12"))
         print("Used tokens: \(session.usedTokens)")
