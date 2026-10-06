@@ -13,6 +13,7 @@ struct OpenAIMessageDto: Codable {
     let content: String?
     let toolCalls: [OpenAIToolCall]?
     let reasoning: String?
+    let reasoningContent: String?
     let thinking: String?
 
     init(role: RoleDto,
@@ -28,6 +29,7 @@ struct OpenAIMessageDto: Codable {
         self.toolCalls = toolCalls
         self.reasoning = reasoning
         self.thinking = thinking
+        self.reasoningContent = reasoning
         self.toolCallID = toolCallID
     }
 
@@ -35,6 +37,7 @@ struct OpenAIMessageDto: Codable {
         case role, name, content
         case toolCalls = "tool_calls"
         case reasoning, thinking
+        case reasoningContent = "reasoning_content"
         case toolCallID = "tool_call_id"
     }
 }
@@ -61,6 +64,6 @@ extension OpenAIMessageDto: ModelMessage {
     }
 
     var thinkingText: String? {
-        self.thinking ?? self.reasoning
+        self.thinking ?? self.reasoning ?? self.reasoningContent
     }
 }
