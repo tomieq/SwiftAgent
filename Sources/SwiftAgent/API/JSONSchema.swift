@@ -6,7 +6,7 @@
 //
 
 public struct JSONSchema: Codable {
-    public let type: String
+    public let type: String // e.g. "object"
     public let properties: [String: Property]
     public let required: [String]?
 
