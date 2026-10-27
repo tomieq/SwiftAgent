@@ -44,7 +44,7 @@ public final class MCPAdapter {
             headers["Authorization"] = "Bearer \(token)"
         }
         let response = await WebResponse<MCPResponse<ToolsList>>
-            .withTimeout(20)
+            .withTimeout(mcpData.config.requestTimeout)
             .post(url: mcpData.config.url, body: command, headers: headers)
         switch response {
         case .failure(let httpError):
@@ -82,7 +82,7 @@ public final class MCPAdapter {
             headers["Authorization"] = "Bearer \(token)"
         }
         let response = await WebResponse<MCPResponse<ToolResult>>
-            .withTimeout(20)
+            .withTimeout(data.config.requestTimeout)
             .post(url: data.config.url, body: command, headers: headers)
         switch response {
         case .failure(let httpError):

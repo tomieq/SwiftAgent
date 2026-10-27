@@ -192,6 +192,13 @@ while case .toolCall(let calls) = response.sessionReponse {
 }
 ```
 
+The following `MCPConfig` options are available per MCP server:
+
+| Property | Description |
+| --- | --- |
+| `authToken` | Optional bearer token. |
+| `requestTimeout` | Request timeout in seconds; defaults to `20`. |
+
 ## Configuration
 
 `AgentConfig` accepts the following values:
